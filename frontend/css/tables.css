@@ -1,0 +1,433 @@
+/* ==========================================================================
+   WARO - TABLE & DATA DISPLAY STYLES
+   Data Tables, Filter Bars, Workflow Timelines, Strategy Cards, Simulators
+   ========================================================================== */
+
+/* Table Card Container */
+.table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table Toolbar */
+.table-toolbar {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--bg-surface);
+}
+
+.table-search-group {
+  position: relative;
+  min-width: 280px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.table-search-group input {
+  width: 100%;
+  padding: 0.55rem 1rem 0.55rem 2.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-main);
+  transition: all var(--transition-speed);
+}
+
+.table-search-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.table-search-group i, .table-search-group svg {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  width: 15px;
+  height: 15px;
+}
+
+.table-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 0.55rem 2rem 0.55rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 14px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Data Table Structure */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.data-table th {
+  background: var(--bg-surface-subtle);
+  color: var(--text-secondary);
+  font-weight: 700;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.data-table th.sortable {
+  cursor: pointer;
+  transition: color var(--transition-speed);
+}
+
+.data-table th.sortable:hover {
+  color: var(--primary);
+}
+
+.data-table th.sortable i, .data-table th.sortable svg {
+  margin-left: 4px;
+  vertical-align: middle;
+  width: 14px;
+  height: 14px;
+  opacity: 0.4;
+}
+
+.data-table th.sortable.active i, .data-table th.sortable.active svg {
+  opacity: 1;
+  color: var(--primary);
+}
+
+.data-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.data-table tbody tr {
+  transition: background var(--transition-speed);
+}
+
+.data-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Cell Elements */
+.cell-primary-text {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.cell-secondary-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.stock-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 120px;
+}
+
+.stock-meter-bar {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.stock-meter-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.stock-meter-fill.high { background: var(--success); }
+.stock-meter-fill.medium { background: var(--warning); }
+.stock-meter-fill.low { background: var(--danger); }
+
+/* Table Pagination */
+.table-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.pagination-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Order Workflow Timeline Modal Widget
+   ========================================================================== */
+.order-workflow-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 1.5rem 0;
+  margin: 1rem 0;
+}
+
+.order-workflow-timeline::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: var(--border-light);
+  z-index: 1;
+}
+
+.timeline-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  flex: 1;
+}
+
+.step-node {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all var(--transition-speed);
+}
+
+.timeline-step.completed .step-node {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+
+.timeline-step.active .step-node {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.timeline-step.problem .step-node {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  max-width: 70px;
+  line-height: 1.2;
+}
+
+.timeline-step.active .step-label {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Smart Allocation Strategy Cards
+   ========================================================================== */
+.strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.strategy-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.strategy-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.strategy-card.selected {
+  border-color: var(--primary);
+  background: #fcfdff;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.12);
+}
+
+.strategy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.strategy-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.strategy-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* Route Optimization Cards */
+.route-optimization-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1.5px solid var(--success-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.route-steps-flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.route-step-pill {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid var(--success-border);
+  color: #065f46;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-xs);
+}
+
+/* What-If Simulator Container */
+.simulator-box {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+}
+
+.sim-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.sim-result-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface-subtle);
+}
+
+.sim-result-card.risk-high {
+  background: #fff5f5;
+  border-color: #feb2b2;
+}
+
+.sim-result-card.risk-low {
+  background: #f0fff4;
+  border-color: #9ae6b4;
+}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Allocation & Conflict Engine — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item active">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">AM</div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Manager</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="git-merge" style="color: var(--primary);"></i>
+              Smart Stock Allocation & Conflict Engine
+            </h1>
+            <div class="page-subtitle">Multi-order constraint solving • Automated resolution cards • Strategy balancing</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Strategy Selector Cards -->
+        <h3 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          Allocation Algorithms & Strategy Profiles
+        </h3>
+        <div class="strategy-grid">
+          <div class="strategy-card selected" data-strategy="Smart Balanced">
+            <div class="strategy-header">
+              <span class="strategy-name">Smart Balanced</span>
+              <span class="badge badge-primary">Default</span>
+            </div>
+            <p class="strategy-desc">Prioritizes critical SLA orders, allocates partial batches to VIPs, and queues reorders to maintain fairness.</p>
+          </div>
+
+          <div class="strategy-card" data-strategy="Priority First">
+            <div class="strategy-header">
+              <span class="strategy-name">Priority First</span>
+              <span class="badge badge-neutral">Strict SLA</span>
+            </div>
+            <p class="strategy-desc">Awards 100% of available inventory to highest Priority Score orders regardless of arrival time.</p>
+          </div>
+
+          <div class="strategy-card" data-strategy="FIFO">
+            <div class="strategy-header">
+              <span class="strategy-name">FIFO Order</span>
+              <span class="badge badge-neutral">Chronological</span>
+            </div>
+            <p class="strategy-desc">First-In First-Out sequential allocation by creation timestamp.</p>
+          </div>
+
+          <div class="strategy-card" data-strategy="Deadline First">
+            <div class="strategy-header">
+              <span class="strategy-name">Deadline First</span>
+              <span class="badge badge-neutral">Carrier Sync</span>
+            </div>
+            <p class="strategy-desc">Optimizes for courier pickup windows closing within the current work shift.</p>
+          </div>
+        </div>
+
+        <!-- Interactive Conflict Workbench Container -->
+        <div style="margin: 1.5rem 0;" id="conflictWorkbenchContainer">
+          <!-- Rendered dynamically by js/allocation.js -->
+        </div>
+
+        <!-- General Allocation Queue Table -->
+        <div class="table-card" style="margin-top: 1.5rem;">
+          <div class="table-toolbar">
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Active Allocation Queue</h4>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Orders evaluated for wave batching</div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Requested Items</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Deadline</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="allocationQueueTableBody">
+                <!-- Rendered by js/allocation.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/allocation.js"></script>
+</body>
+</html>

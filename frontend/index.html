@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waro — Intelligent Warehouse Operations & Order Fulfillment System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at 10% 20%, #1e1b4b 0%, #0f172a 90%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 1080px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(79, 70, 229, 0.2);
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .login-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .login-hero {
+        display: none !important;
+      }
+    }
+
+    .login-hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%);
+      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #1e293b;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #818cf8;
+      width: fit-content;
+    }
+
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin: 1.5rem 0 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .hero-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .hero-feat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    .feat-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+      background: rgba(99, 102, 241, 0.25);
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .login-form-side {
+      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #0f172a;
+    }
+
+    .login-header {
+      margin-bottom: 2rem;
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .login-subtitle {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.35rem;
+    }
+
+    .role-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-card {
+      padding: 1rem 1.25rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .role-card:hover {
+      background: #334155;
+      border-color: #6366f1;
+      transform: translateY(-1px);
+    }
+
+    .role-card.selected {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .role-info {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .role-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    .role-name {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    .role-desc {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .login-divider {
+      text-align: center;
+      position: relative;
+      margin: 1.5rem 0;
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    .login-divider::before, .login-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #334155;
+    }
+
+    .login-divider::before { left: 0; }
+    .login-divider::after { right: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <!-- Left Hero Side -->
+    <div class="login-hero">
+      <div>
+        <div class="hero-badge">
+          <i data-lucide="cpu" style="width: 14px; height: 14px;"></i>
+          <span>Intelligent Fulfillment Engine</span>
+        </div>
+        <h1 class="hero-title">Waro Operations Platform</h1>
+        <p class="hero-desc">
+          Automated priority scoring, smart inventory conflict resolution, route-optimized picking, and exception management for next-generation warehouses.
+        </p>
+
+        <div class="hero-features">
+          <div class="hero-feat-item">
+            <div class="feat-icon"><i data-lucide="zap" style="width: 16px; height: 16px;"></i></div>
+            <span><strong>MONITOR → DECIDE → ACT</strong> operational control loop</span>
+          </div>
+          <div class="hero-feat-item">
+            <div class="feat-icon"><i data-lucide="git-merge" style="width: 16px; height: 16px;"></i></div>
+            <span><strong>Smart Allocation Engine</strong> with shortage conflict solver</span>
+          </div>
+          <div class="hero-feat-item">
+            <div class="feat-icon"><i data-lucide="navigation" style="width: 16px; height: 16px;"></i></div>
+            <span><strong>Warehouse Route Optimization</strong> saving up to 40% walk time</span>
+          </div>
+          <div class="hero-feat-item">
+            <div class="feat-icon"><i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i></div>
+            <span><strong>Automated Exception Handling</strong> with 1-click resolutions</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; justify-content: space-between;">
+        <span>SmartStock Core v2.4</span>
+        <span>Operational Readiness: 100%</span>
+      </div>
+    </div>
+
+    <!-- Right Login Form Side -->
+    <div class="login-form-side">
+      <div class="login-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+          <div class="brand-logo" style="width: 32px; height: 32px;">
+            <i data-lucide="boxes" style="width: 18px; height: 18px;"></i>
+          </div>
+          <span style="font-size: 1.3rem; font-weight: 800; color: #ffffff;">Waro</span>
+        </div>
+        <h2 class="login-title">Select Demo Account</h2>
+        <p class="login-subtitle">Choose a role to sign in instantly with mock authentication.</p>
+      </div>
+
+      <!-- Demo Role Selectors -->
+      <div class="role-cards-grid">
+        <!-- Warehouse Manager -->
+        <div class="role-card selected" onclick="selectRole('Manager', this)">
+          <div class="role-info">
+            <div class="role-avatar" style="background: #4f46e5;">AM</div>
+            <div>
+              <div class="role-name">Alex Morgan</div>
+              <div class="role-desc">Warehouse Operations Manager (Full Access)</div>
+            </div>
+          </div>
+          <span class="badge badge-primary" style="background: rgba(99, 102, 241, 0.25); color: #a5b4fc;">Manager</span>
+        </div>
+
+        <!-- System Admin -->
+        <div class="role-card" onclick="selectRole('Admin', this)">
+          <div class="role-info">
+            <div class="role-avatar" style="background: #059669;">SC</div>
+            <div>
+              <div class="role-name">Dr. Sarah Connor</div>
+              <div class="role-desc">System Administrator (Config & Settings)</div>
+            </div>
+          </div>
+          <span class="badge" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7;">Admin</span>
+        </div>
+
+        <!-- Warehouse Worker / Picker -->
+        <div class="role-card" onclick="selectRole('Worker', this)">
+          <div class="role-info">
+            <div class="role-avatar" style="background: #d97706;">MV</div>
+            <div>
+              <div class="role-name">Marcus Vance</div>
+              <div class="role-desc">Senior Lead Picker (Picking & QC Tasks)</div>
+            </div>
+          </div>
+          <span class="badge" style="background: rgba(245, 158, 11, 0.25); color: #fde68a;">Worker</span>
+        </div>
+      </div>
+
+      <button id="loginSubmitBtn" class="btn btn-primary btn-lg w-full" onclick="executeLogin()">
+        <span>Launch Dashboard as Warehouse Manager</span>
+        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+      </button>
+
+      <div class="login-divider">Or enter custom credentials</div>
+
+      <form onsubmit="event.preventDefault(); executeLogin();">
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <input type="text" class="form-control" id="customUser" placeholder="Username (e.g. alex.morgan)" style="background: #1e293b; border-color: #334155; color: #fff;">
+        </div>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <input type="password" class="form-control" id="customPass" value="password123" placeholder="Password" style="background: #1e293b; border-color: #334155; color: #fff;">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let activeRole = 'Manager';
+
+    function selectRole(role, element) {
+      activeRole = role;
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+      const btn = document.getElementById('loginSubmitBtn');
+      btn.querySelector('span').textContent = `Launch Dashboard as ${role}`;
+    }
+
+    function executeLogin() {
+      StorageService.init();
+      AuthService.login(activeRole);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageService.init();
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

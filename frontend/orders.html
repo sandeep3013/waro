@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders & Smart Priority — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item active">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">AM</div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Manager</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="shopping-cart" style="color: var(--primary);"></i>
+              Order Management & Priority Scorer
+            </h1>
+            <div class="page-subtitle">Priority Score = Urgency(40) + Customer(25) + Value(15) + Stock(10) + DelayRisk(10)</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="table-card">
+          <!-- Filter Toolbar -->
+          <div class="table-toolbar">
+            <div class="table-search-group">
+              <i data-lucide="search"></i>
+              <input type="text" id="orderSearchInput" placeholder="Search Order ID, customer, carrier...">
+            </div>
+
+            <div class="table-filters">
+              <select id="orderPriorityFilter" class="filter-select">
+                <option value="all">All Priorities</option>
+                <option value="Critical">Critical (90-100)</option>
+                <option value="High">High (75-89)</option>
+                <option value="Medium">Medium (50-74)</option>
+                <option value="Low">Low (0-49)</option>
+              </select>
+
+              <select id="orderStatusFilter" class="filter-select">
+                <option value="all">All Pipeline Stages</option>
+                <option value="New">New / Inventory Checking</option>
+                <option value="Allocated">Allocated</option>
+                <option value="Picking">Picking</option>
+                <option value="Packing">Packing</option>
+                <option value="Quality Check">Quality Check</option>
+                <option value="Ready to Dispatch">Ready to Dispatch</option>
+                <option value="Dispatched">Dispatched</option>
+              </select>
+
+              <button class="btn btn-secondary btn-sm" onclick="OrdersController.renderTable()">
+                <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer / Tier</th>
+                  <th>Items & Qty</th>
+                  <th>Value</th>
+                  <th>Created</th>
+                  <th>Deadline</th>
+                  <th>Priority Engine</th>
+                  <th>Status</th>
+                  <th>Risk</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- Rendered by js/orders.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <span id="ordersCountText">Showing 52 orders</span>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">
+              Automated 5-Factor Priority Scoring Active
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ORDER WORKFLOW TIMELINE MODAL -->
+  <div class="modal-overlay" id="orderDetailModal">
+    <div class="modal-container" style="max-width: 780px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="git-commit" style="color: var(--primary);"></i>
+          Order Fulfillment Workflow: <span id="modalOrderId" style="color: var(--primary); margin-left: 4px;"></span>
+        </div>
+        <button class="modal-close" onclick="ModalService.close('orderDetailModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Order Meta Box -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.85rem; padding: 1rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Customer</div>
+            <div style="font-weight: 700; font-size: 0.9rem;" id="modalOrderCustomer">Apex Global Technologies</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Total Value</div>
+            <div style="font-weight: 700; font-size: 0.9rem;" id="modalOrderValue">$369.88</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Designated Carrier</div>
+            <div style="font-weight: 700; font-size: 0.9rem;" id="modalOrderCarrier">FedEx Express</div>
+          </div>
+        </div>
+
+        <!-- AI Priority Rationale Quote -->
+        <div style="padding: 0.85rem 1rem; background: #eef2ff; border-left: 4px solid var(--primary); border-radius: var(--radius-sm); margin-bottom: 1.25rem; font-size: 0.85rem;">
+          <div style="font-weight: 700; color: var(--primary); margin-bottom: 2px;">Decision Engine Rationale:</div>
+          <div style="color: #312e81;" id="modalOrderRationale">Scored 94/100 (Critical) due to same-day delivery SLA and VIP customer account status.</div>
+        </div>
+
+        <!-- 8-Stage Interactive Workflow Timeline -->
+        <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">Fulfillment Stage Progress</h4>
+        <div class="order-workflow-timeline" id="modalOrderTimeline">
+          <!-- Rendered by js/orders.js -->
+        </div>
+
+        <!-- Order Items Table -->
+        <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin: 1.25rem 0 0.5rem;">Ordered SKUs</h4>
+        <div class="table-responsive" style="border: 1px solid var(--border-light); border-radius: var(--radius-md);">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Bin Location</th>
+                <th style="text-align: center;">Qty</th>
+                <th style="text-align: right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="modalOrderItemsTbody">
+              <!-- Rendered by js/orders.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ModalService.close('orderDetailModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>

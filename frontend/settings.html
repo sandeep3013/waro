@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings & Operations Config — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item active">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar" style="background: #059669;">SC</div>
+          <div class="user-details">
+            <div class="user-name">Dr. Sarah Connor</div>
+            <div class="user-role">System Admin</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="settings" style="color: var(--primary);"></i>
+              Warehouse Configuration & Demo State Control
+            </h1>
+            <div class="page-subtitle">SLA target thresholds • Worker roster • Factory demo data reset</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+          <!-- Left: SLA Parameters & Facility Info -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="sliders" style="color: var(--primary);"></i>
+                Fulfillment SLA Benchmarks
+              </h3>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Warehouse Facility Name</label>
+              <input type="text" id="settingWhName" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Zone / Distribution Code</label>
+              <input type="text" id="settingLocation" class="form-control">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Target Picking Duration (Mins)</label>
+                <input type="number" id="settingPickingTarget" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Target Packing Duration (Mins)</label>
+                <input type="number" id="settingPackingTarget" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Target Dispatch Duration (Mins)</label>
+                <input type="number" id="settingDispatchTarget" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Auto-Reorder Buffer Margin (%)</label>
+                <input type="number" id="settingSafetyMargin" class="form-control">
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 0.5rem;">
+              <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+              Save Configuration
+            </button>
+          </div>
+
+          <!-- Right: Demo State Controls & System Telemetry -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i data-lucide="database" style="color: var(--primary);"></i>
+                Hackathon Demo State Control
+              </h3>
+            </div>
+
+            <div style="padding: 1rem; background: #fff5f5; border: 1.5px solid #fed7d7; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+              <div style="font-weight: 800; font-size: 0.95rem; color: #9b2c2c; margin-bottom: 4px;">
+                Reset Demo Scenario
+              </div>
+              <p style="font-size: 0.82rem; color: #742a2a; line-height: 1.4; margin-bottom: 1rem;">
+                Re-seeds the entire mock database back to its initial state: restores urgent order #ORD-1042 conflict, resets picking task PK-203 with unoptimized route, and creates exception EX-109 for live demonstration.
+              </p>
+              <button class="btn btn-danger w-full" id="resetDemoBtn">
+                <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                Reset All Demo Data (Factory Defaults)
+              </button>
+            </div>
+
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+              <div><strong>Engine:</strong> Waro Decision Engine Core v2.4</div>
+              <div><strong>State Storage:</strong> HTML5 localStorage (Client-Side Persistent)</div>
+              <div><strong>UI Framework:</strong> Pure HTML5 / CSS3 / Vanilla JavaScript</div>
+              <div><strong>Status:</strong> All operational modules online and responsive.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Worker Staff Roster Table -->
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Warehouse Worker Roster & Shift Assignments</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Worker ID</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Shift</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="settingsWorkersTableBody">
+                <!-- Rendered by js/settings.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

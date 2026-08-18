@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Center — Waro Warehouse Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Dark Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <i data-lucide="boxes" style="width: 20px; height: 20px;"></i>
+        </div>
+        <div class="brand-info">
+          <div class="brand-name">
+            Waro <span class="brand-badge">PRO</span>
+          </div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item active">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">AM</div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Manager</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <main class="main-wrapper">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="activity" style="color: var(--primary); width: 24px; height: 24px;"></i>
+              Warehouse Command Center
+            </h1>
+            <div class="page-subtitle">Real-time fulfillment telemetry, automated decisioning, and pipeline status</div>
+          </div>
+        </div>
+
+        <div class="header-search">
+          <i data-lucide="search"></i>
+          <input type="text" placeholder="Search orders, SKUs, bins..." onkeydown="if(event.key==='Enter') window.location.href='inventory.html?q=' + encodeURIComponent(this.value)">
+        </div>
+
+        <div class="header-right">
+          <div class="live-status-pill">
+            <div class="live-dot"></div>
+            <span>Auto-Decision Active</span>
+          </div>
+
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+
+          <a href="settings.html" class="header-btn" title="Settings">
+            <i data-lucide="sliders" style="width: 18px; height: 18px;"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="dashboard-grid">
+          
+          <!-- Bottleneck Alert Banner (Rendered dynamically by dashboard.js) -->
+          <div id="bottleneckContainer"></div>
+
+          <!-- KPI Summary Cards -->
+          <div class="kpi-grid">
+            <!-- Total Orders -->
+            <div class="kpi-card kpi-info">
+              <div class="kpi-top">
+                <span class="kpi-label">Total Orders</span>
+                <div class="kpi-icon-wrapper"><i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i></div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiTotalOrders">52</span>
+                <span class="kpi-trend positive"><i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> +12%</span>
+              </div>
+              <div class="kpi-subtext">Active fulfillment cycle this week</div>
+            </div>
+
+            <!-- Pending Picking -->
+            <div class="kpi-card kpi-warning">
+              <div class="kpi-top">
+                <span class="kpi-label">Pending Picking</span>
+                <div class="kpi-icon-wrapper warning"><i data-lucide="navigation" style="width: 18px; height: 18px;"></i></div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiPendingPicking">32</span>
+                <span class="kpi-trend negative" id="kpiPendingPickingSub">8 urgent SLA</span>
+              </div>
+              <div class="kpi-subtext">Active wave batches in Zone A/B</div>
+            </div>
+
+            <!-- Low Stock SKUs -->
+            <div class="kpi-card kpi-danger">
+              <div class="kpi-top">
+                <span class="kpi-label">Low / Critical Stock</span>
+                <div class="kpi-icon-wrapper danger"><i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i></div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiLowStock">4</span>
+                <span class="kpi-trend negative" id="kpiLowStockSub">1 critical</span>
+              </div>
+              <div class="kpi-subtext"><span id="kpiOutOfStock">1</span> SKU completely out of stock</div>
+            </div>
+
+            <!-- Fulfillment Rate -->
+            <div class="kpi-card kpi-success">
+              <div class="kpi-top">
+                <span class="kpi-label">Fulfillment Rate</span>
+                <div class="kpi-icon-wrapper success"><i data-lucide="check-circle" style="width: 18px; height: 18px;"></i></div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" id="kpiFulfillmentRate">87%</span>
+                <span class="kpi-trend positive"><i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> +4.2%</span>
+              </div>
+              <div class="kpi-subtext">On-time SLA dispatch performance</div>
+            </div>
+          </div>
+
+          <!-- ACTION REQUIRED: AI DECISION RECOMMENDATIONS SECTION -->
+          <section class="action-required-section">
+            <div class="action-required-header">
+              <div class="ai-pill-title">
+                <div class="ai-glow-badge">
+                  <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+                  AI Decision Engine
+                </div>
+                <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">Action Required Recommendations</h2>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-secondary);">
+                System identified operational conflicts requiring supervisor confirmation
+              </div>
+            </div>
+
+            <!-- Dynamic Decision Cards Container -->
+            <div class="ai-recommendations-list" id="aiDecisionsList">
+              <!-- Rendered by js/dashboard.js -->
+            </div>
+          </section>
+
+          <!-- 2-Column Section: Warehouse Health + Activity Feed -->
+          <div class="dashboard-columns">
+            <!-- Left: Warehouse Health Score Index -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">
+                    <i data-lucide="shield-check" style="color: var(--primary);"></i>
+                    Warehouse Health Score
+                  </h3>
+                  <p class="card-subtitle">Aggregated multi-factor operational efficiency index</p>
+                </div>
+                <span class="badge badge-success" id="healthScoreBadge">Optimal</span>
+              </div>
+
+              <div class="health-widget">
+                <!-- SVG Circular Progress Meter -->
+                <div class="health-gauge-container">
+                  <svg class="health-gauge-svg" viewBox="0 0 140 140">
+                    <defs>
+                      <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#4f46e5" />
+                        <stop offset="100%" stop-color="#10b981" />
+                      </linearGradient>
+                    </defs>
+                    <circle class="gauge-bg" cx="70" cy="70" r="60" />
+                    <circle class="gauge-progress" id="healthScoreCircle" cx="70" cy="70" r="60" />
+                  </svg>
+                  <div class="gauge-center-text">
+                    <div class="gauge-score" id="healthScoreValue">87</div>
+                    <div class="gauge-max">/ 100</div>
+                  </div>
+                </div>
+
+                <!-- Breakdown Meters -->
+                <div class="health-metrics-breakdown">
+                  <div class="health-breakdown-row">
+                    <span class="health-metric-name">Inventory Balance</span>
+                    <div class="health-metric-bar"><div class="health-metric-fill" id="barInvFill" style="width: 88%; background: var(--success);"></div></div>
+                    <span class="health-metric-value" id="barInvVal">88%</span>
+                  </div>
+
+                  <div class="health-breakdown-row">
+                    <span class="health-metric-name">Fulfillment On-Time</span>
+                    <div class="health-metric-bar"><div class="health-metric-fill" id="barFulfillFill" style="width: 92%; background: var(--success);"></div></div>
+                    <span class="health-metric-value" id="barFulfillVal">92%</span>
+                  </div>
+
+                  <div class="health-breakdown-row">
+                    <span class="health-metric-name">Picking Cycle SLA</span>
+                    <div class="health-metric-bar"><div class="health-metric-fill" id="barPickFill" style="width: 78%; background: var(--warning);"></div></div>
+                    <span class="health-metric-value" id="barPickVal">78%</span>
+                  </div>
+
+                  <div class="health-breakdown-row">
+                    <span class="health-metric-name">Quality / QC Pass Rate</span>
+                    <div class="health-metric-bar"><div class="health-metric-fill" id="barQualityFill" style="width: 95%; background: var(--success);"></div></div>
+                    <span class="health-metric-value" id="barQualityVal">95%</span>
+                  </div>
+
+                  <div class="health-breakdown-row">
+                    <span class="health-metric-name">Exception Resolution</span>
+                    <div class="health-metric-bar"><div class="health-metric-fill" id="barExFill" style="width: 84%; background: var(--success);"></div></div>
+                    <span class="health-metric-value" id="barExVal">84%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.8rem; color: var(--text-secondary);">Goal: Maintain >85 Index for peak shift efficiency</span>
+                <a href="analytics.html" class="btn btn-secondary btn-sm">Full Analytics</a>
+              </div>
+            </div>
+
+            <!-- Right: Real-time Activity Timeline -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">
+                    <i data-lucide="clock" style="color: var(--primary);"></i>
+                    Live Operational Timeline
+                  </h3>
+                  <p class="card-subtitle">Audited log of actions, approvals and system events</p>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="StorageService.resetDemoData(); DashboardController.init();" title="Reset state to default demo scenario">
+                  <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                  Reset Demo
+                </button>
+              </div>
+
+              <div class="timeline-feed" id="dashboardActivityTimeline">
+                <!-- Rendered by js/dashboard.js -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

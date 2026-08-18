@@ -1,0 +1,19 @@
+{
+  "name": "waro-wms-root",
+  "version": "1.0.0",
+  "description": "Waro Warehouse Management System - Full-Stack Architecture",
+  "scripts": {
+    "build": "cd backend && npm install",
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js"
+  },
+  "keywords": [
+    "warehouse",
+    "wms",
+    "express",
+    "frontend",
+    "backend"
+  ],
+  "author": "Waro Development Team",
+  "license": "ISC"
+}

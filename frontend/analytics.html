@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics & What-If Simulator — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item active">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">AM</div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Manager</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="bar-chart-3" style="color: var(--primary);"></i>
+              Operational Analytics & What-If Simulator
+            </h1>
+            <div class="page-subtitle">SLA cycle metrics • Stage bottleneck monitoring • In-memory capacity simulation</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- WHAT-IF SIMULATOR COMPONENT -->
+        <section class="simulator-box" style="margin-bottom: 2rem; border-left: 6px solid var(--primary);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <div class="ai-glow-badge"><i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Interactive Sandbox</div>
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">What-If Inventory Allocation Simulator</h2>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 3px;">
+                Simulate competing multi-order constraints without mutating live warehouse state.
+              </p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="runSimBtn">
+              <i data-lucide="play" style="width: 15px; height: 15px;"></i>
+              Simulate Scenario
+            </button>
+          </div>
+
+          <!-- Simulator Form Controls -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 1rem; padding: 1.25rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Select SKU to Stress-Test</label>
+              <select id="simProductSelect" class="form-control"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Current Physical Stock</label>
+              <input type="number" id="simCurrentStock" class="form-control" value="7">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Urgent VIP Demand (Units)</label>
+              <input type="number" id="simUrgentQty" class="form-control" value="10">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Normal Demand (Units)</label>
+              <input type="number" id="simNormalQty" class="form-control" value="5">
+            </div>
+          </div>
+
+          <!-- Simulation Output Results Cards -->
+          <div class="sim-results-grid">
+            <div class="sim-result-card">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Urgent Order Fulfilled</div>
+              <div id="simResUrgent" style="margin-top: 4px;"></div>
+            </div>
+
+            <div class="sim-result-card">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Normal Order Fulfilled</div>
+              <div id="simResNormal" style="margin-top: 4px;"></div>
+            </div>
+
+            <div class="sim-result-card">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Remaining Stock Buffer</div>
+              <div id="simResRemaining" style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 4px;">0 units</div>
+            </div>
+
+            <div class="sim-result-card">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Unfulfilled Deficit</div>
+              <div id="simResDeficit" style="font-size: 1.5rem; font-weight: 800; color: var(--danger); margin-top: 4px;">8 units</div>
+            </div>
+
+            <div class="sim-result-card">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Operational Risk Index</div>
+              <div style="margin-top: 8px;">
+                <span id="simResRisk" class="badge badge-danger">CRITICAL RISK</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Recommendation Quote -->
+          <div style="margin-top: 1rem; padding: 1rem; background: #ffffff; border-radius: var(--radius-md); border: 1.5px dashed var(--primary);">
+            <div style="font-weight: 800; font-size: 0.88rem; color: var(--primary); margin-bottom: 2px;">
+              Decision Engine Simulation Recommendation:
+            </div>
+            <div id="simResRecommendation" style="font-size: 0.85rem; color: var(--text-main); font-weight: 500;">
+              Allocate all available stock to urgent order and trigger emergency procurement.
+            </div>
+          </div>
+        </section>
+
+        <!-- KPI Summary Cards Row -->
+        <div class="kpi-grid" style="margin-bottom: 1.75rem;">
+          <div class="kpi-card">
+            <span class="kpi-label">Avg Fulfillment Time</span>
+            <div class="kpi-value-row"><span class="kpi-value">42</span> <span style="font-size: 1rem; font-weight: 600;">mins</span></div>
+            <div class="kpi-subtext">Order creation to courier dispatch</div>
+          </div>
+
+          <div class="kpi-card kpi-danger">
+            <span class="kpi-label">Avg Picking Time (Bottleneck)</span>
+            <div class="kpi-value-row"><span class="kpi-value" style="color: var(--danger);">18</span> <span style="font-size: 1rem; font-weight: 600;">mins</span></div>
+            <div class="kpi-subtext">Target: 10 mins (+80% slower)</div>
+          </div>
+
+          <div class="kpi-card kpi-success">
+            <span class="kpi-label">Avg Packing Time</span>
+            <div class="kpi-value-row"><span class="kpi-value">6</span> <span style="font-size: 1rem; font-weight: 600;">mins</span></div>
+            <div class="kpi-subtext">Target: 5 mins</div>
+          </div>
+
+          <div class="kpi-card kpi-info">
+            <span class="kpi-label">Defect / Damage Rate</span>
+            <div class="kpi-value-row"><span class="kpi-value">1.2%</span></div>
+            <div class="kpi-subtext">Within quality SLA limits</div>
+          </div>
+        </div>
+
+        <!-- 2-Column Chart Grid -->
+        <div class="dashboard-columns" style="margin-bottom: 1.75rem;">
+          <!-- Stage Cycle Times vs SLA Benchmark -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i data-lucide="activity" style="color: var(--primary);"></i> Stage Cycle Times vs SLA Benchmark</h3>
+                <p class="card-subtitle">Identifies operational delays and staffing deficits</p>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="cycleTimeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Orders by Status Distribution -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title"><i data-lucide="pie-chart" style="color: var(--primary);"></i> Pipeline Stage Distribution</h3>
+                <p class="card-subtitle">Active order volumes by status</p>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="orderStatusChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Worker Productivity Leaderboard Table -->
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div>
+              <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Worker Productivity & Pick Rates (Today)</h3>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);">Real-time shift task completion telemetry</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Worker Name & Role</th>
+                  <th>Shift Status</th>
+                  <th style="text-align: center;">Tasks Completed</th>
+                  <th style="text-align: right;">SLA Efficiency</th>
+                </tr>
+              </thead>
+              <tbody id="workerLeaderboardTableBody">
+                <!-- Rendered by js/analytics.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>

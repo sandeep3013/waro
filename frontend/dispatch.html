@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispatch & Shipping Hub — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item active">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar" style="background: #0284c7;">SJ</div>
+          <div class="user-details">
+            <div class="user-name">Sarah Jenkins</div>
+            <div class="user-role">Dispatcher</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="truck" style="color: var(--primary);"></i>
+              Dispatch & Loading Dock Control
+            </h1>
+            <div class="page-subtitle">Courier carrier handover • Barcode tracking generation • Physical inventory relieve</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Ready to Dispatch Queue Card -->
+        <div class="table-card" style="margin-bottom: 1.5rem;">
+          <div class="table-toolbar">
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Loading Bay Staging Queue</h3>
+              <div style="font-size: 0.8rem; color: var(--text-secondary);" id="readyDispatchCount">Orders packed and waiting for courier barcode scan</div>
+            </div>
+
+            <div class="table-filters">
+              <select id="dispatchCarrierFilter" class="filter-select">
+                <option value="all">All Carriers</option>
+                <option value="FedEx">FedEx Express</option>
+                <option value="DHL">DHL Express</option>
+                <option value="UPS">UPS Ground</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Package Size</th>
+                  <th>Weight</th>
+                  <th>Assigned Carrier</th>
+                  <th>Tracking Number</th>
+                  <th>Priority</th>
+                  <th style="text-align: right;">Handover Action</th>
+                </tr>
+              </thead>
+              <tbody id="readyDispatchTableBody">
+                <!-- Rendered by js/dispatch.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Dispatches Log -->
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main);">Recent Carrier Handovers (Today)</h4>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Carrier</th>
+                  <th>Tracking Number</th>
+                  <th>Status</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody id="dispatchedHistoryTableBody">
+                <!-- Rendered by js/dispatch.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dispatch.js"></script>
+</body>
+</html>

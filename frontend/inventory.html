@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management — Waro Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo"><i data-lucide="boxes" style="width: 20px; height: 20px;"></i></div>
+        <div class="brand-info">
+          <div class="brand-name">Waro <span class="brand-badge">PRO</span></div>
+          <div class="brand-subtitle">Smart Warehouse Ops</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="nav-item active">
+          <i data-lucide="package"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <i data-lucide="shopping-cart"></i>
+          <span>Orders</span>
+          <span class="nav-badge badge-orders-count">32</span>
+        </a>
+
+        <div class="nav-section-title">Fulfillment Pipeline</div>
+        <a href="allocation.html" class="nav-item">
+          <i data-lucide="git-merge"></i>
+          <span>Smart Allocation</span>
+        </a>
+        <a href="picking.html" class="nav-item">
+          <i data-lucide="navigation"></i>
+          <span>Picking & Route</span>
+          <span class="nav-badge warning badge-picking-count">8</span>
+        </a>
+        <a href="packing.html" class="nav-item">
+          <i data-lucide="box"></i>
+          <span>Packing & QC</span>
+        </a>
+        <a href="dispatch.html" class="nav-item">
+          <i data-lucide="truck"></i>
+          <span>Dispatch</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence & System</div>
+        <a href="exceptions.html" class="nav-item">
+          <i data-lucide="alert-octagon"></i>
+          <span>Exceptions</span>
+          <span class="nav-badge badge-exceptions-count">4</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Analytics & Sim</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">AM</div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-role">Manager</div>
+          </div>
+          <button class="user-logout-btn" onclick="AuthService.logout()" title="Sign Out">
+            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu" style="width: 20px; height: 20px;"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title">
+              <i data-lucide="package" style="color: var(--primary);"></i>
+              Inventory Control & Stock Ledger
+            </h1>
+            <div class="page-subtitle">Available Stock = Total Stock - Reserved - Damaged • Automatic Reorder Triggers</div>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="btn btn-primary btn-sm" onclick="InventoryController.openAddProductModal()">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+            <span>Add New SKU</span>
+          </button>
+
+          <button class="header-btn" id="headerNotifBtn" title="Notifications">
+            <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            <span class="header-badge-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Main Inventory Table Card -->
+        <div class="table-card">
+          <!-- Toolbar -->
+          <div class="table-toolbar">
+            <div class="table-search-group">
+              <i data-lucide="search"></i>
+              <input type="text" id="inventorySearchInput" placeholder="Search SKU, product name, bin location...">
+            </div>
+
+            <div class="table-filters">
+              <select id="categoryFilterSelect" class="filter-select">
+                <option value="all">All Categories</option>
+              </select>
+
+              <select id="statusFilterSelect" class="filter-select">
+                <option value="all">All Stock Statuses</option>
+                <option value="Healthy">Healthy</option>
+                <option value="Low Stock">Low Stock</option>
+                <option value="Critical">Critical (≤ 2)</option>
+                <option value="Out of Stock">Out of Stock</option>
+              </select>
+
+              <button class="btn btn-secondary btn-sm" onclick="InventoryController.renderTable()">
+                <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="sortable" onclick="InventoryController.sort('sku')">SKU <i data-lucide="chevrons-up-down"></i></th>
+                  <th class="sortable" onclick="InventoryController.sort('name')">Product Details <i data-lucide="chevrons-up-down"></i></th>
+                  <th>Category</th>
+                  <th class="sortable" onclick="InventoryController.sort('location')">Location <i data-lucide="chevrons-up-down"></i></th>
+                  <th class="sortable" onclick="InventoryController.sort('totalStock')">Total <i data-lucide="chevrons-up-down"></i></th>
+                  <th>Reserved</th>
+                  <th class="sortable" onclick="InventoryController.sort('available')">Available Stock <i data-lucide="chevrons-up-down"></i></th>
+                  <th>Damaged</th>
+                  <th>Reorder Lvl</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody">
+                <!-- Rendered dynamically by js/inventory.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Footer -->
+          <div class="table-footer">
+            <span id="inventoryItemCount">Showing 32 items</span>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">
+              Calculated real-time available stock
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Adjust Stock Modal -->
+  <div class="modal-overlay" id="adjustStockModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="sliders" style="color: var(--primary);"></i>
+          Adjust Inventory Stock
+        </div>
+        <button class="modal-close" onclick="ModalService.close('adjustStockModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="adjustSku">
+        <div style="margin-bottom: 1rem; padding: 0.85rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">Target Item</div>
+          <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);" id="adjustName">Wireless Mouse Pro</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">Current Stock: <strong id="adjustCurrent">10 units</strong></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Stock Change Delta (+ / -)</label>
+          <input type="number" id="adjustDelta" class="form-control" placeholder="e.g. +5 or -2">
+          <small style="color: var(--text-muted); font-size: 0.75rem;">Enter positive number to add stock, negative to subtract.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Adjustment Reason</label>
+          <select id="adjustReason" class="form-control">
+            <option value="Cycle Count Adjustment">Physical Cycle Count Correction</option>
+            <option value="Supplier Inbound Receipt">Unscheduled Supplier Inbound</option>
+            <option value="Inventory Write-off">Damaged / Expired Write-off</option>
+            <option value="Customer Return Restock">Customer RMA Return Restock</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ModalService.close('adjustStockModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="InventoryController.saveStockAdjustment()">Save Stock Count</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark Damaged Modal -->
+  <div class="modal-overlay" id="markDamageModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" style="color: var(--danger);">
+          <i data-lucide="alert-triangle" style="color: var(--danger);"></i>
+          Report Damaged Inventory
+        </div>
+        <button class="modal-close" onclick="ModalService.close('markDamageModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="damageSku">
+        <div style="margin-bottom: 1rem; padding: 0.85rem; background: #fff5f5; border: 1px solid #fed7d7; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; color: #9b2c2c;">Product to Quarantine</div>
+          <div style="font-size: 1.05rem; font-weight: 800; color: #742a2a;" id="damageName">USB Hub</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Quantity Damaged</label>
+          <input type="number" id="damageQty" class="form-control" min="1" value="1">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Defect Observation / Reason</label>
+          <textarea id="damageReason" class="form-control" rows="3" placeholder="Describe package crushing, cracked casing, or port damage..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ModalService.close('markDamageModal')">Cancel</button>
+        <button class="btn btn-danger" onclick="InventoryController.saveDamageReport()">Flag Damaged & Move to Quarantine</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reorder Modal -->
+  <div class="modal-overlay" id="reorderModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="truck" style="color: var(--primary);"></i>
+          Create Purchase Replenishment
+        </div>
+        <button class="modal-close" onclick="ModalService.close('reorderModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="reorderSku">
+        <div style="margin-bottom: 1rem; padding: 0.85rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">Replenishment Target</div>
+          <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);" id="reorderName">Wireless Mouse Pro</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Recommended Reorder Quantity</label>
+          <input type="number" id="reorderQty" class="form-control" value="30">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Designated Supplier / Vendor</label>
+          <input type="text" id="reorderSupplier" class="form-control" value="Primary Global Tech Logistics Ltd.">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ModalService.close('reorderModal')">Cancel</button>
+        <button class="btn btn-success" onclick="InventoryController.saveReorder()">Dispatch Purchase Order (PO)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="addProductModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="plus-circle" style="color: var(--primary);"></i>
+          Create New Inventory SKU
+        </div>
+        <button class="modal-close" onclick="ModalService.close('addProductModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">SKU Code</label>
+            <input type="text" id="newProdSku" class="form-control" placeholder="e.g. SKU-NX-999">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Warehouse Bin Location</label>
+            <input type="text" id="newProdLoc" class="form-control" placeholder="e.g. A-02-15">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Product Name</label>
+          <input type="text" id="newProdName" class="form-control" placeholder="e.g. Ultra HD 4K Monitor Arm">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="newProdCategory" class="form-control">
+              <option value="Accessories">Accessories</option>
+              <option value="Peripherals">Peripherals</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Audio">Audio</option>
+              <option value="Cables">Cables</option>
+              <option value="Power">Power</option>
+              <option value="Storage">Storage</option>
+              <option value="Warehouse Gear">Warehouse Gear</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unit Price ($)</label>
+            <input type="number" id="newProdPrice" class="form-control" value="49.99" step="0.01">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Initial Physical Stock</label>
+            <input type="number" id="newProdStock" class="form-control" value="25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reorder Safety Level</label>
+            <input type="number" id="newProdReorder" class="form-control" value="10">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ModalService.close('addProductModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="InventoryController.saveNewProduct()">Create SKU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/decision-engine.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/inventory.js"></script>
+</body>
+</html>
