@@ -4,11 +4,15 @@
  */
 
 const API = {
-  // Determine Base URL dynamically (relative /api in production/Render, http://localhost:5000/api for local standalone dev)
   getBaseUrl: function() {
     if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      // If running on Render-hosted domain, use full URL
+      if (host.endsWith('onrender.com')) {
+        return `https://${host}/api`;
+      }
       const isLocalFile = window.location.protocol === 'file:';
-      const isLocalDevOtherPort = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port && window.location.port !== '5000';
+      const isLocalDevOtherPort = (host === 'localhost' || host === '127.0.0.1') && window.location.port && window.location.port !== '5000';
       if (isLocalFile || isLocalDevOtherPort) {
         return 'http://localhost:5000/api';
       }
